@@ -33,8 +33,16 @@ int main(int argc, char* argv[]) {
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Init(SDL_INIT_VIDEO);
-    
     TTF_Init();
+     SDL_CreateWindowAndRenderer(SW, SH, 0, &window, &renderer);
+     SDL_SetWindowTitle(window, "Scoreboard");
+    
+     TTF_Font* font = TTF_OpenFont("fonts/light-arial.ttf", 40);
+     if (!font) {
+         printf("Error loading font: %s \n", TTF_GetError());
+         return 1;
+     }
+    
     render_info render_info = init_renderer();
     SDL_SetRenderDrawBlendMode(render_info.renderer, SDL_BLENDMODE_BLEND);
     if (render_info.err != 0)return render_info.err;
