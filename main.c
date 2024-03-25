@@ -20,9 +20,20 @@ float randomfloatinrange(float min, float max) {
 
 int randominrange(int min, int max) { return(rand() % (max - min + 1)) + min; }
 
-
+static void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y, SDL_Color color) {
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect rect = { x, y, surface->w, surface->h };
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
 
 int main(int argc, char* argv[]) {
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    SDL_Init(SDL_INIT_VIDEO);
+    
     TTF_Init();
     render_info render_info = init_renderer();
     SDL_SetRenderDrawBlendMode(render_info.renderer, SDL_BLENDMODE_BLEND);
@@ -50,7 +61,31 @@ int main(int argc, char* argv[]) {
         DRAW_SCORE(p1_score, p2_score, &render_info, fontPixel);
         SDL_RenderPresent(render_info.renderer); // update display
         SDL_Delay(FRAMERATE);}
+    
+        int quit = 0;
+        while (!quit) {
+            SDL_Event event;
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT) {
+                    quit = 1;
+                }
+            }
+    
+            SDL_SetRenderDrawColor(renderer, black.r, black.g, black.b, black.a);
+            SDL_RenderClear(renderer);
+    
+            renderText(renderer, font, "Player One Lives: 3", 20, 990, white);
+            renderText(renderer, font, "Player One Score: 0", 420, 990, white);
+            renderText(renderer, font, "High Score: 0", 820, 990, white);
+            renderText(renderer, font, "Player Two Score: 0", 1220, 990, white);
+            renderText(renderer, font, "Player Two Lives: 3", 1620, 990, white);
+    
+            SDL_RenderPresent(renderer);
+        }
+    TTF_CloseFont(font);
     SDL_DestroyRenderer(render_info.renderer);
     SDL_DestroyWindow(render_info.window);
-    SDL_Quit(); return 0;
+    TTF_Quit();
+    SDL_Quit(); 
+    return 0;
 }
