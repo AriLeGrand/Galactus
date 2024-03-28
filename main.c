@@ -80,9 +80,10 @@ int main(int argc, char* argv[]) {
         //renderText(render_info.renderer, font, "High Score: 0", 820, 990, white);
         //renderText(render_info.renderer, font, "Player Two Score: 0", 1220, 990, white);
         //renderText(render_info.renderer, font, "Player Two Lives: 3", 1620, 990, white);
+        DRAW_PLAYERS(&render_info, PLAYERS, &DEBUG_INFO);
         DRAW_SCORE(p1_score, p2_score, &render_info, font, PLAYERS);
 
-        DRAW_PLAYERS(&render_info, PLAYERS, &DEBUG_INFO);
+        
         // more of a fill
         //SDL_RenderCopy(render_info.renderer, backgroundTexture, NULL, NULL);
         //LAST_HITTED = UPDATE_TICK_CUBE(CUBE, SLIDERS, &p1_score, &p2_score, LAST_HITTED,
