@@ -1,8 +1,9 @@
-#pragma once
-#include <SDL_ttf.h>
-#include <math.h>
+﻿#pragma once
+#include "libs.h"
+#include "render.h"
 
-const TTF_Font* fontPixel;
+
+const TTF_Font* font;
 
 typedef struct SCORE {
     int score;
@@ -10,70 +11,43 @@ typedef struct SCORE {
 } SCORE;
 
 
-TTF_Font *init_SCORE() {
-    const char* fontPixelPath = "./Pixels.ttf";
+TTF_Font* init_SCORE() {
+    const char* fontPath = "light-arial.ttf";
     int size = 25;
-    
+
     // Cette fonction doit �tre appel�e une fois au d�but de votre programme
 
     if (TTF_Init() == -1) {
         printf("Erreur lors de l'initialisation de SDL_ttf: %s\n", TTF_GetError());
     }
-    fontPixel = TTF_OpenFont(fontPixelPath, size);
+    font= TTF_OpenFont(fontPath, size);
     // Charger la police TrueType � partir d'un fichier
-    if (fontPixel == NULL) {
+    if (font == NULL) {
         printf("Erreur lors du chargement de la police : %s\n", TTF_GetError());
     }
-    return fontPixel;
+    return 0;
 }
 
 
 
 
-void DRAW_SCORE(SCORE p1, SCORE p2, render_info* r_i, TTF_Font *fontPixel) {
-    int width = SW;
-    int height = SH;
-    int x = width / 2;
-    int y = height / 2;
-
-    // Allouez de la m�moire pour les cha�nes de caract�res score1 et score2
-    char score1[20];
-    sprintf_s(score1, sizeof(score1), "%d", p1.score);
-    char score2[20];
-    sprintf_s(score2, sizeof(score2), "%d", p2.score);
-
-    // V�rifiez si le renderer est valide
-    if (r_i->renderer == NULL) {
-        printf("Renderer non valide\n");
-        return;
-    }
-
-    SDL_Color White = {255, 255, 255};
-    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(fontPixel, score1, White); 
-    SDL_Texture* Message = SDL_CreateTextureFromSurface(r_i->renderer, surfaceMessage);
-    SDL_Rect Message_rect; 
-    Message_rect.x = 80;
-    Message_rect.y = 0;
-    int i;
-    for (i = 0; score1[i] != '\0'; ++i);
-    Message_rect.w = 50 * i;
-    Message_rect.h = 100;
-    SDL_RenderCopy(r_i->renderer, Message, NULL, &Message_rect);
-
-    SDL_DestroyTexture(Message);
+void DRAW_SCORE(SCORE p1, SCORE p2, render_info* r_i, TTF_Font* font, PLAYER* PLAYERS) {
+    char buf[24];
+    snprintf(buf, 24, "Player One Lives : %d", PLAYERS[0].health);
+    renderText(r_i->renderer, font, buf, 20, 990, white);
 
 
-    SDL_Surface* surfaceMessage_ = TTF_RenderText_Solid(fontPixel, score2, White); 
-    SDL_Texture* Message_ = SDL_CreateTextureFromSurface(r_i->renderer, surfaceMessage_);
-    SDL_Rect Message_rect_; 
-    for (i = 0; score2[i] != '\0'; ++i);
-    Message_rect_.x = SW - 120 * i;
-    Message_rect_.y = 0;
-    Message_rect_.w = 50 * i;
-    Message_rect_.h = 100;
-    SDL_RenderCopy(r_i->renderer, Message_, NULL, &Message_rect_);
+    snprintf(buf, 24, "Player One Score : %d", p1.score);
+    renderText(r_i->renderer, font, buf, 420, 990, white);
+
+    renderText(r_i->renderer, font, "High Score: 0", 820, 990, white);
 
 
+    snprintf(buf, 24, "Player Two Lives : %d", PLAYERS[1].health);
+    renderText(r_i->renderer, font, buf, 1620, 990, white);
 
-    SDL_DestroyTexture(Message_);
+    
+    snprintf(buf, 24, "Player Two Score : %d", p2.score);
+    renderText(r_i->renderer, font, buf, 1220, 990, white);
+
 }

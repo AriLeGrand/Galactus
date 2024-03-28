@@ -1,3 +1,4 @@
+﻿#pragma once
 #pragma once
 
 #include <SDL.h>
@@ -9,14 +10,23 @@
 #define R_P_S SDL_RENDERER_PRESENTVSYNC
 
 //Taille de la fen�tre
-#define SW 800
-#define SH 600
+#define SW 1920
+#define SH 1080
+
+SDL_Color white = { 255, 255, 255, 255 };
+SDL_Color black = { 0, 0, 0, 255 };
+SDL_Rect scoreZone = { 0, 980, SW, 100 };
 
 typedef struct render_info {
     SDL_Window* window;
     SDL_Renderer* renderer;
     int err;
 } render_info;
+
+typedef struct debug_info {
+    int SHOW_HITBOX;
+} debug_info;
+
 
 render_info init_render_info(SDL_Window* window, SDL_Renderer* renderer, int err) {
     render_info renderInfo = { .window = window,.renderer = renderer,.err = err };
@@ -47,41 +57,16 @@ render_info init_renderer() {
 }
 
 
-int handle_events(render_info* render_info, int* keys) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            // Fermeture de la fen�tre et de la SDL
-            SDL_DestroyRenderer(render_info->renderer);
-            SDL_DestroyWindow(render_info->window);
-            SDL_Quit();
-            return 1;
-        }
-        if (event.type == SDL_KEYDOWN) {
-            if (event.key.keysym.sym == SDLK_UP)keys[0] = 1;
-            if (event.key.keysym.sym == SDLK_DOWN)keys[1] = 1;
-            if (event.key.keysym.sym == SDLK_z)keys[2] = 1;
-            if (event.key.keysym.sym == SDLK_s)keys[3] = 1;
-        }
-        if (event.type == SDL_KEYUP) {
-            if (event.key.keysym.sym == SDLK_UP)keys[0] = 0;
-            if (event.key.keysym.sym == SDLK_DOWN)keys[1] = 0;
-            if (event.key.keysym.sym == SDLK_z)keys[2] = 0;
-            if (event.key.keysym.sym == SDLK_s)keys[3] = 0;
-        }
-    }
-    return 0;
-}
 // Function to load an image
-SDL_Texture* loadTexture(SDL_Renderer *renderer, const char *file) {
+SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* file) {
     SDL_Surface* surface = SDL_LoadBMP(file);
     if (surface == NULL) {
         // Handle error
         printf("Unable to load image %s! SDL_image Error: %s\n", file);
         return NULL;
     }
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if(texture == NULL)
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (texture == NULL)
     {
         printf("Unable to create texture from %s! SDL Error: %s\n", file);
     }
@@ -89,3 +74,11 @@ SDL_Texture* loadTexture(SDL_Renderer *renderer, const char *file) {
     return texture;
 }
 
+void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, int x, int y, SDL_Color color) {
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect rect = { x, y, surface->w, surface->h };
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}

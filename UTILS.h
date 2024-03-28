@@ -1,5 +1,7 @@
-#pragma once
+#define TRUE 1
+#define FALSE 0
 
+typedef struct Vec2 { int x; int y; } Vec2;
 typedef struct COLOR { int r; int g; int b; }COLOR;
 typedef struct CUBE { int vx; int vy; int px; int py; int s; COLOR col; }CUBE;
 typedef struct SLIDER { int px; int py; int s_x; int sy; COLOR col; }SLIDER;
